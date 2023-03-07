@@ -11,4 +11,5 @@ echo -e "\e[32mCopying nginx\e[0m"
 cp ${code_dir}/configs/nginx-roboshop.conf /etc/nginx/default.d/roboshop.conf
 echo -e "\e[34mEnabling nginx\e[0m"
 systemctl enable nginx
+echo -e "\e[35mStarting nginx\e[0m"
 systemctl restart nginx
