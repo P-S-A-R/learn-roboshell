@@ -4,7 +4,7 @@ xyz()
   echo second argument=$2
   echo all arguments=$*
   echo no of arguments=$#
-  echo $a
+  echo value of a = $a
   b=200
 
 }
