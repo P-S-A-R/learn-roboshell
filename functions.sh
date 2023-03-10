@@ -11,5 +11,6 @@ xyz()
 
 
 xyz 123 456
+
 a=100
 echo value of b =$b
