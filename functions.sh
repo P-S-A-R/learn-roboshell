@@ -8,7 +8,7 @@ xyz()
   b=200
 
 }
-
+a=220
 xyz 123 456
-a=120
+
 echo value of b =$b
