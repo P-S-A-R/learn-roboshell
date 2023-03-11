@@ -1,4 +1,4 @@
-source common.sh 
+source common.sh
 print_head "Looking for Catalogue"
 curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>>{log_file}
 print_head "Installing Catalogue"
@@ -17,14 +17,14 @@ unzip /tmp/catalogue.zip &>>{log_file}
 cd /app
 print_head "Reinstalling  Catalogue"
 npm install &>>{log_file}
-cp configs/catalogue.service /etc/systemd/system/catalogue.service &>>{log_file}
+cp ${code_dir}/configs/catalogue.service /etc/systemd/system/catalogue.service &>>{log_file}
 print_head "Reloading Catalogue"
 systemctl daemon-reload
 print_head "Enabling Catalogue"
 systemctl enable catalogue
 print_head "Starting Catalogue"
 systemctl start catalogue
-cp configs/mongodb.repo /etc/yum.repos.d/mongodb.repo &>>{log_file}
+cp ${code_dir}/configs/mongodb.repo /etc/yum.repos.d/mongodb.repo &>>{log_file}
 print_head "Installing mongodb"
 yum install mongodb-org-shell -y &>>{log_file}
 print_head "Downloading schema"
