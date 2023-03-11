@@ -1,30 +1,36 @@
-echo -e "\e[33mLooking for Catalogue\e[0m"
-curl -sL https://rpm.nodesource.com/setup_lts.x | bash
-echo -e "\e[32mInstalling Catalogue\e[0m"
-yum install nodejs -y
-echo -e "\e[33mAdding user\e[0m"
+log_file=/tmp/roboshop.log
+ rm -f ${log_file}
+ print_head() {
+   echo -e "\e[32m$1\e[0m"
+ }
+
+print_head "Looking for Catalogue"
+curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>>{log_file}
+print_head "Installing Catalogue"
+yum install nodejs -y &>>{log_file}
+print_head "Adding user"
 useradd roboshop
-echo -e "\e[34mCreating appdirectory\e[0m"
+print_head "Creating app directory"
 mkdir /app
-echo -e "\e[35mRemoving content in app\e[0m"
-rm -rf /app/*
-echo -e "\e[31mDownloading Catalogue\e[0m"
-curl -L -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue.zip
+print_head "Removing content in app"
+rm -rf /app/* &>>{log_file}
+print_head "Downloading Catalogue"
+curl -L -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue.zip &>>{log_file}
 cd /app
-echo -e "\e[36mExtracting Catalogue\e[0m"
-unzip /tmp/catalogue.zip
+print_head "Extracting Catalogue"
+unzip /tmp/catalogue.zip &>>{log_file}
 cd /app
-echo -e "\e[33mReinstalling  Catalogue\e[0m"
-npm install
-cp configs/catalogue.service /etc/systemd/system/catalogue.service
-echo -e "\e[34mReloading Catalogue\e[0m"
+print_head "Reinstalling  Catalogue"
+npm install &>>{log_file}
+cp configs/catalogue.service /etc/systemd/system/catalogue.service &>>{log_file}
+print_head "Reloading Catalogue"
 systemctl daemon-reload
-echo -e "\e[35mEnabling Catalogue\e[0m"
+print_head "Enabling Catalogue"
 systemctl enable catalogue
-echo -e "\e[36mStarting Catalogue\e[0m"
+print_head "Starting Catalogue"
 systemctl start catalogue
-cp configs/mongodb.repo /etc/yum.repos.d/mongodb.repo
-echo -e "\e[33mInstalling mongodbrepo\e[0m"
-yum install mongodb-org-shell -y
-echo -e "\e[31mDownloading schema\e[0m"
-mongo --host mongodb.devopsb71.shop </app/schema/catalogue.js
+cp configs/mongodb.repo /etc/yum.repos.d/mongodb.repo &>>{log_file}
+print_head "Installing mongodb"
+yum install mongodb-org-shell -y &>>{log_file}
+print_head "Downloading schema"
+mongo --host mongodb.devopsb71.shop </app/schema/catalogue.js &>>{log_file}
