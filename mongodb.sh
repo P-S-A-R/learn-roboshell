@@ -1,9 +1,14 @@
-echo -e "\e[32mCopying mongodb\e[0m"
-cp configs/mongodb.repo /etc/yum.repos.d/mongo.repo
-echo -e "\e[35mInstlling mongodb\e[0m"
-yum install mongodb-org -y
-echo -e "\e[34mEnbling mongodb\e[0m"
+log_file=/tmp/roboshop.log
+ rm -f ${log_file}
+ print_head() {
+   echo -e "\e[34m$1\e[0m"
+ }
+print_head "copying mongodb"
+cp configs/mongodb.repo /etc/yum.repos.d/mongo.repo &>>{log_file}
+print_head "Instlling mongodb"
+yum install mongodb-org -y &>>{log_file}
+print_head "Enabling mongodb"
 systemctl enable mongod
-echo -e "\e[33mStarting mongodb\e[0m"
+print_head "starting mongodb"
 systemctl start mongod
 
