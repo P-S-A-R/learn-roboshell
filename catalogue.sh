@@ -4,9 +4,9 @@ curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>>{log_file}
 print_head "Installing Catalogue"
 yum install nodejs -y &>>{log_file}
 print_head "Adding user"
-useradd roboshop
+useradd roboshop &>>{log_file}
 print_head "Creating app directory"
-mkdir /app
+mkdir /app &>>{log_file}
 print_head "Removing content in app"
 rm -rf /app/* &>>{log_file}
 print_head "Downloading Catalogue"
