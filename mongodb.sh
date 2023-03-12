@@ -1,6 +1,6 @@
 source common.sh
 print_head "copying mongodb"
-cp configs/mongodb.repo /etc/yum.repos.d/mongo.repo &>>${log_file}
+cp ${code_dir}/configs/mongodb.repo /etc/yum.repos.d/mongo.repo &>>${log_file}
 print_head "Instlling mongodb"
 yum install mongodb-org -y &>>${log_file}
 print_head "updating mongo db ip address"
