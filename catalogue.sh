@@ -12,7 +12,9 @@ if [ $? -ne 0 ]; then
 fi
 status_check $?
 print_head "Creating app directory"
-mkdir /app &>>${log_file}
+if [ ! -d /app ]; then
+  mkdir /app &>>${log_file}
+fi
 status_check $?
 print_head "Removing content in app"
 rm -rf /app/* &>>${log_file}
