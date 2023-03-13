@@ -9,6 +9,7 @@ print_head "Downloading frontend content"
 curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend.zip &>>${log_file}
 status_check $?
 cd /usr/share/nginx/html
+print_head "extracting nginx"
 unzip /tmp/frontend.zip &>>${log_file}
 status_check $?
 print_head "Copying nginx"
