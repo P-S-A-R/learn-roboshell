@@ -15,7 +15,8 @@ if [ $? -ne 0 ]; then
 fi
 status_check $?
 
-Print_head "Mking app Directory"
+Print_head "Making app Directory"
+
 if [ ! -d /app ]; then
   mkdir /app &>>${log_file}
 fi
@@ -53,10 +54,10 @@ status_check $?
 
 print_head "starting user"
 systemctl start user &>>${log_file}
-status_check$?
+status_check $?
 
 print_head "copying mongodb.repo"
-cp ${code_dir}/configs/mongodb.service /etc/yum.repos.d/mongo.repo &>>${log_file}
+cp ${code_dir}/configs/mongodb.repo /etc/yum.repos.d/mongo.repo &>>${log_file}
 status_check $?
 
 print_head "installing mongodb"
@@ -64,5 +65,5 @@ yum install mongodb-org-shell -y &>>${log_file}
 status_check $?
 
 print_head "downloading schema"
-mongo --host mongodb.devopsb71.shop </app/schema/user.js &>>{log_file}
+mongo --host mongodb.devopsb71.shop </app/schema/user.js &>>${log_file}
 status_check $?
