@@ -64,5 +64,5 @@ yum install mongodb-org-shell -y &>>${log_file}
 status_check $?
 
 print_head "downloading schema"
-mongo --host MONGODB-SERVER-IPADDRESS </app/schema/user.js &>>{log_file}
+mongo --host mongodb.devopsb71.shop </app/schema/user.js &>>{log_file}
 status_check $?
