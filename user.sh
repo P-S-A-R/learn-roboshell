@@ -15,14 +15,14 @@ if [ $? -ne 0 ]; then
 fi
 status_check $?
 
-Print_head "Making app Directory"
+print_head "Making app Directory"
 
 if [ ! -d /app ]; then
   mkdir /app &>>${log_file}
 fi
 status_check $?
 
-Print_head "Removing content in app"
+print_head "Removing content in app"
 rm -rf /app/* &>>${log_file}
 status_check $?
 
