@@ -24,8 +24,11 @@ print_head "Starting rabbitmq"
 systemctl start rabbitmq-server &>>${log_file}
 status_check $?
 
-print_head "add pplication user"
-rabbitmqctl add_user roboshop ${roboshop_app_pssword} &>>${log_file}
+print_head "add application user"
+rabbitmqctl list_users | grep roboshop &>>${log_file}
+if [ $? -ne 0 ]; then
+  rabbitmqctl add_user roboshop ${roboshop_app_pssword} &>>${log_file}
+fi
 status_check $?
 
 print_head "configure permissions for app user"
