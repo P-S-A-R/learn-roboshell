@@ -16,6 +16,24 @@ status_check() {
   fi
 }
 
+systemd_setup() {
+  print_head "copying systemd service file"
+  cp ${code_dir}/configs/${component}.service /etc/systemd/system/${component}.service &>>${log_file}
+  status_check $?
+
+  print_head "Relaoding user"
+  systemctl daemon-reload  &>>${log_file}
+  status_check $?
+
+  print_head "enabling user"
+  systemctl enable ${component} &>>${log_file}
+  status_check $?
+
+  print_head "starting user"
+  systemctl restart ${component} &>>${log_file}
+  status_check $?
+}
+
 schema_setup() {
   if [ "${schema_type}" == "mongo" ]; then
       print_head "copying mongodb.repo"
@@ -29,8 +47,47 @@ schema_setup() {
       print_head "downloading schema"
       mongo --host mongodb.devopsb71.shop </app/schema/${component}.js &>>${log_file}
       status_check $?
+  elif [ "${schema_type}" == "mysql" ]; then
+    print_head "install mysql client"
+    yum install mysql -y &>>${log_file}
+    status_check $?
+
+    print_head "load schema"
+    mysql -h mysql.devopsb71.shop -uroot -p${mysql_root_password} < /app/schema/shipping.sql &>>${log_file}
+    status_check $?
   fi
 }
+
+app_prereq_setup() {
+  print_head "Adding User"
+  id roboshop &>>${log_file}
+  if [ $? -ne 0 ]; then
+    useradd roboshop &>>${log_file}
+  fi
+  status_check $?
+
+  print_head "Making app Directory"
+
+  if [ ! -d /app ]; then
+    mkdir /app &>>${log_file}
+  fi
+  status_check $?
+
+  print_head "Removing content in app"
+  rm -rf /app/* &>>${log_file}
+  status_check $?
+
+  print_head "downloading user"
+  curl -L -o /tmp/${component}.zip https://roboshop-artifacts.s3.amazonaws.com/${component}.zip &>>${log_file}
+  status_check $?
+
+  cd /app
+
+  print_head "Extracting user"
+  unzip /tmp/${component}.zip &>>${log_file}
+  status_check $?
+}
+
 nodejs() {
 
 print_head "Installing user.repo"
@@ -41,54 +98,29 @@ print_head "Install Node.js"
 yum install nodejs -y &>>${log_file}
 status_check $?
 
-print_head "Adding User"
-id roboshop &>>${log_file}
-if [ $? -ne 0 ]; then
-  useradd roboshop &>>${log_file}
-fi
-status_check $?
-
-print_head "Making app Directory"
-
-if [ ! -d /app ]; then
-  mkdir /app &>>${log_file}
-fi
-status_check $?
-
-print_head "Removing content in app"
-rm -rf /app/* &>>${log_file}
-status_check $?
-
-print_head "downloading user"
-curl -L -o /tmp/${component}.zip https://roboshop-artifacts.s3.amazonaws.com/${component}.zip &>>${log_file}
-status_check $?
-
-cd /app
-
-print_head "Extracting user"
-unzip /tmp/${component}.zip &>>${log_file}
-status_check $?
+app_prereq_setup
 
 print_head "installing user dependencies"
 npm install &>>${log_file}
 status_check $?
 
-print_head "copying systemd service file"
-cp ${code_dir}/configs/${component}.service /etc/systemd/system/${component}.service &>>${log_file}
-status_check $?
-
-print_head "Relaoding user"
-systemctl daemon-reload  &>>${log_file}
-status_check $?
-
-print_head "enabling user"
-systemctl enable ${component} &>>${log_file}
-status_check $?
-
-print_head "starting user"
-systemctl start ${component} &>>${log_file}
-status_check $?
-
 schema_setup
+systemd_setup
 
+}
+java() {
+
+  print_head "install maven"
+  yum install maven -y &>>${log_file}
+  status_check $?
+
+ app_prereq_setup
+
+ print_head "Downloading dependencies and packages"
+ mvn clean package &>>${log_file}
+ mv target/${component}-1.0.jar ${component}.jar &>>${log_file}
+ status_check $?
+
+ schema_setup
+ systemd_setup
 }
