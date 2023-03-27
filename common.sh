@@ -16,6 +16,21 @@ status_check() {
   fi
 }
 
+schema_setup() {
+  if [ "${schema_type}" == "mongo"]; then
+      print_head "copying mongodb.repo"
+      cp ${code_dir}/configs/mongodb.repo /etc/yum.repos.d/mongodb.repo &>>${log_file}
+      status_check $?
+
+      print_head "installing mongodb"
+      yum install mongodb-org-shell -y &>>${log_file}
+      status_check $?
+
+      print_head "downloading schema"
+      mongo --host mongodb.devopsb71.shop </app/schema/${component}.js &>>${log_file}
+      status_check $?
+  fi
+}
 nodejs() {
 
 print_head "Installing user.repo"
@@ -74,16 +89,6 @@ print_head "starting user"
 systemctl start ${component} &>>${log_file}
 status_check $?
 
-print_head "copying mongodb.repo"
-cp ${code_dir}/configs/mongodb.repo /etc/yum.repos.d/mongodb.repo &>>${log_file}
-status_check $?
-
-print_head "installing mongodb"
-yum install mongodb-org-shell -y &>>${log_file}
-status_check $?
-
-print_head "downloading schema"
-mongo --host mongodb.devopsb71.shop </app/schema/${component}.js &>>${log_file}
-status_check $?
+schema_setup
 
 }
