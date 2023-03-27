@@ -10,7 +10,7 @@ print_head "Disabling mysql 8 version"
 dnf module disable mysql -y &>>${log_file}
 status_check $?
 
-print_head "copying mysql reo file"
+print_head "copying mysql repo file"
 cp ${code_dir}/configs/mysql.repo /etc/yum.repos.d/mysql.repo &>>${log_file}
 status_check $?
 
@@ -27,7 +27,7 @@ systemctl start mysqld &>>${log_file}
 status_check $?
 
 print_head "set password"
-echo show databses | mysql -uroot -p${mysql_root_password}  &>>${log_file}
+echo show databases | mysql -uroot -p${mysql_root_password}  &>>${log_file}
 if [ $? -ne 0 ]; then
   mysql_secure_installation --set-root-pass ${mysql_root_password} &>>${log_file}
 fi
