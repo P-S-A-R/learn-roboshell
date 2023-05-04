@@ -16,6 +16,7 @@ status_check() {
   fi
 }
 
+
 systemd_setup() {
   print_head "copying systemd service file"
   cp ${code_dir}/configs/${component}.service /etc/systemd/system/${component}.service &>>${log_file}
