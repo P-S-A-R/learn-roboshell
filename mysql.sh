@@ -26,7 +26,7 @@ print_head "Starting mysql"
 systemctl start mysqld &>>${log_file}
 status_check $?
 
-print_head "set password"
+print_head "set Root password"
 echo show databases | mysql -uroot -p${mysql_root_password}  &>>${log_file}
 if [ $? -ne 0 ]; then
   mysql_secure_installation --set-root-pass ${mysql_root_password} &>>${log_file}

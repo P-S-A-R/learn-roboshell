@@ -23,11 +23,11 @@ systemd_setup() {
 
   sed -i -e "s/ROBOSHOP_USER_PASSWORD/${roboshop_app_password}/" /etc/systemd/system/${component}.service &>>${log_file}
 
-  print_head "Relaoding user"
+  print_head "Relaoding systemd"
   systemctl daemon-reload  &>>${log_file}
   status_check $?
 
-  print_head "enabling user"
+  print_head "enabling component"
   systemctl enable ${component} &>>${log_file}
   status_check $?
 
@@ -47,7 +47,7 @@ schema_setup() {
       status_check $?
 
       print_head "downloading schema"
-      mongo --host mongodb.devopsb71.shop </app/schema/${component}.js &>>${log_file}
+      mongo --host mongodb-dev.devopsb71.shop </app/schema/${component}.js &>>${log_file}
       status_check $?
   elif [ "${schema_type}" == "mysql" ]; then
     print_head "install mysql client"
@@ -61,7 +61,7 @@ schema_setup() {
 }
 
 app_prereq_setup() {
-  print_head "Adding User"
+  print_head "creating roboshop User"
   id roboshop &>>${log_file}
   if [ $? -ne 0 ]; then
     useradd roboshop &>>${log_file}
@@ -79,20 +79,20 @@ app_prereq_setup() {
   rm -rf /app/* &>>${log_file}
   status_check $?
 
-  print_head "downloading user"
+  print_head "downloading app content"
   curl -L -o /tmp/${component}.zip https://roboshop-artifacts.s3.amazonaws.com/${component}.zip &>>${log_file}
   status_check $?
 
   cd /app
 
-  print_head "Extracting user"
+  print_head "Extracting app content"
   unzip /tmp/${component}.zip &>>${log_file}
   status_check $?
 }
 
 nodejs() {
 
-print_head "Installing user.repo"
+print_head "configure nodejs.repo"
 curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>>${log_file}
 status_check $?
 
@@ -102,7 +102,7 @@ status_check $?
 
 app_prereq_setup
 
-print_head "installing user dependencies"
+print_head "installing nodejs dependencies"
 npm install &>>${log_file}
 status_check $?
 
@@ -137,24 +137,6 @@ python() {
 
  print_head "Downloading dependencies"
  pip3.6 install -r requirements.txt &>>${log_file}
- status_check $?
-
- systemd_setup
-}
-
-golang() {
-
-  print_head "install golang"
-  yum install golang -y &>>${log_file}
-  status_check $?
-
- app_prereq_setup
-
- print_head "Downloading dependencies"
- cd /app
- go mod init dispatch
- go get
- go build
  status_check $?
 
  systemd_setup
